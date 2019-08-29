@@ -30,6 +30,11 @@ Parameters:
     Default: 6
     Description: DayOfMonth for Schedule, default 6 - use 12 if you want to report
       refunds and finalised Enterprise Support.
+  MetricsKey:
+      Type: String
+      Default: AmortizedCost
+      Description: The metric value to base the reports on default AmortizedCost, possibles [AmortizedCost,
+        BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]
 Resources:
   CostExplorerReport:
     Type: AWS::Serverless::Function
@@ -64,6 +69,8 @@ Resources:
           CURRENT_MONTH:
             Ref: CurrentMonth
           INC_SUPPORT: 'false'
+          METRICS_KEY:
+            Ref: MetricsKey
       Events:
         MonthlyEvent:
           Properties:

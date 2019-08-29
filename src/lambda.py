@@ -73,6 +73,8 @@ else:
 TAG_VALUE_FILTER = os.environ.get('TAG_VALUE_FILTER') or '*'
 TAG_KEY = os.environ.get('TAG_KEY')
 
+METRICS_KEY = os.environ.get('METRICS_KEY') or 'AmortizedCost'
+
 class CostExplorer:
     """Retrieves BillingInfo checks from CostExplorer API
     >>> costexplorer = CostExplorer()
@@ -92,9 +94,9 @@ class CostExplorer:
             self.start = (datetime.date.today() - relativedelta(months=+1)).replace(day=1) #1st day of month a month ago
         else:
             # Default is last 12 months
-            self.start = (datetime.date.today() - relativedelta(months=+12)).replace(day=1) #1st day of month 12 months ago
+            self.start = (datetime.date.today() - relativedelta(months=+10)).replace(day=1) #1st day of month 12 months ago
     
-        self.ristart = (datetime.date.today() - relativedelta(months=+11)).replace(day=1) #1st day of month 11 months ago
+        self.ristart = (datetime.date.today() - relativedelta(months=+9)).replace(day=1) #1st day of month 11 months ago
         self.sixmonth = (datetime.date.today() - relativedelta(months=+6)).replace(day=1) #1st day of month 6 months ago, so RI util has savings values
         try:
             self.accounts = self.getAccounts()
@@ -256,7 +258,7 @@ class CostExplorer:
                 },
                 Granularity='MONTHLY',
                 Metrics=[
-                    'UnblendedCost',
+                    METRICS_KEY,
                 ],
                 GroupBy=GroupBy
             )
@@ -299,7 +301,7 @@ class CostExplorer:
                 },
                 Granularity='MONTHLY',
                 Metrics=[
-                    'UnblendedCost',
+                    METRICS_KEY,
                 ],
                 GroupBy=GroupBy,
                 Filter=Filter
@@ -317,7 +319,7 @@ class CostExplorer:
                     },
                     Granularity='MONTHLY',
                     Metrics=[
-                        'UnblendedCost',
+                        METRICS_KEY,
                     ],
                     GroupBy=GroupBy,
                     NextPageToken=nextToken
@@ -337,9 +339,9 @@ class CostExplorer:
                 key = i['Keys'][0]
                 if key in self.accounts:
                     key = self.accounts[key][ACCOUNT_LABEL]
-                row.update({key:float(i['Metrics']['UnblendedCost']['Amount'])}) 
+                row.update({key:float(i['Metrics'][METRICS_KEY]['Amount'])}) 
             if not v['Groups']:
-                row.update({'Total':float(v['Total']['UnblendedCost']['Amount'])})
+                row.update({'Total':float(v['Total'][METRICS_KEY]['Amount'])})
             rows.append(row)  
 
         df = pd.DataFrame(rows)
