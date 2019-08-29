@@ -45,7 +45,7 @@ Resources:
       Timeout: 60
       Handler: lambda.main_handler
       Runtime: python3.6
-      CodeUri: s3://aws-cost-explorer-report-bin/lambda.zip
+      CodeUri: s3://hmhco-billing/lambda.zip
       Layers:
       - arn:aws:lambda:us-east-1:749981256976:layer:aws-cost-explorer-report:1
       Role:
@@ -104,6 +104,7 @@ Resources:
           - Effect: Allow
             Action:
             - s3:PutObject
+            - s3:GetObject
             - s3:PutObjectAcl
             Resource:
               Fn::Sub: arn:aws:s3:::${S3Bucket}/*
